@@ -1,0 +1,314 @@
+/* === Root & General === */
+.root {
+    -fx-background-color: #0a0e27;
+    -fx-font-family: "System";
+}
+
+.root-pane {
+    -fx-background-color: #0a0e27;
+}
+
+/* === Top Bar === */
+.top-bar {
+    -fx-background-color: #0d1130;
+    -fx-border-color: transparent transparent #1a1f40 transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.app-title {
+    -fx-text-fill: #e2e8f0;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+}
+
+/* === Left Panel === */
+.left-panel {
+    -fx-background-color: #0d1130;
+    -fx-border-color: transparent #1a1f40 transparent transparent;
+    -fx-border-width: 0 1 0 0;
+}
+
+.list-title {
+    -fx-text-fill: #94a3b8;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-transform: uppercase;
+}
+
+.timer-scroll {
+    -fx-background: #0d1130;
+    -fx-background-color: transparent;
+}
+
+.timer-scroll .viewport {
+    -fx-background-color: transparent;
+}
+
+.timer-scroll .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 8px;
+}
+
+.timer-scroll .scroll-bar:vertical .track {
+    -fx-background-color: transparent;
+}
+
+.timer-scroll .scroll-bar:vertical .thumb {
+    -fx-background-color: #2a2f55;
+    -fx-background-radius: 4;
+}
+
+.timer-scroll .scroll-bar:vertical .increment-button,
+.timer-scroll .scroll-bar:vertical .decrement-button {
+    -fx-pref-height: 0;
+    -fx-padding: 0;
+}
+
+/* === Timer Cards === */
+.timer-card {
+    -fx-background-color: #141833;
+    -fx-background-radius: 8;
+    -fx-border-color: #1e2348;
+    -fx-border-radius: 8;
+    -fx-cursor: hand;
+}
+
+.timer-card:hover {
+    -fx-background-color: #1a1f45;
+    -fx-border-color: #6c3fb5;
+}
+
+.timer-card-selected {
+    -fx-background-color: #1a1f45;
+    -fx-border-color: #8b5cf6;
+    -fx-border-width: 1.5;
+}
+
+.card-name {
+    -fx-text-fill: #e2e8f0;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.card-time {
+    -fx-text-fill: #94a3b8;
+    -fx-font-size: 12px;
+}
+
+/* === Arrow Buttons === */
+.arrow-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #555a80;
+    -fx-font-size: 10px;
+    -fx-padding: 2 6;
+    -fx-cursor: hand;
+    -fx-background-radius: 4;
+    -fx-min-width: 24px;
+    -fx-min-height: 20px;
+}
+
+.arrow-btn:hover {
+    -fx-background-color: #1e2348;
+    -fx-text-fill: #8b5cf6;
+}
+
+.arrow-btn:disabled {
+    -fx-opacity: 0.3;
+}
+
+/* === Add Timer Button === */
+.add-timer-btn {
+    -fx-background-color: linear-gradient(to bottom, #6c3fb5, #8b5cf6);
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 16;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+.add-timer-btn:hover {
+    -fx-background-color: linear-gradient(to bottom, #7c4fc5, #9d74f7);
+}
+
+.done-btn {
+    -fx-background-color: linear-gradient(to bottom, #16a34a, #22c55e);
+}
+
+.done-btn:hover {
+    -fx-background-color: linear-gradient(to bottom, #22c55e, #4ade80);
+}
+
+.cancel-btn {
+    -fx-background-color: #1e2348;
+    -fx-text-fill: #94a3b8;
+    -fx-font-size: 13px;
+    -fx-padding: 10 16;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+.cancel-btn:hover {
+    -fx-background-color: #2a2f55;
+    -fx-text-fill: #e2e8f0;
+}
+
+/* === New Timer Form === */
+.form-container {
+    -fx-padding: 0;
+}
+
+.new-timer-form {
+    -fx-background-color: #141833;
+    -fx-background-radius: 8;
+    -fx-border-color: #1e2348;
+    -fx-border-radius: 8;
+}
+
+.form-title {
+    -fx-text-fill: #e2e8f0;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.form-field,
+.form-field .text-field {
+    -fx-background-color: #1a1f40;
+    -fx-text-fill: #e2e8f0;
+    -fx-prompt-text-fill: #555a80;
+    -fx-border-color: #2a2f55;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-padding: 8;
+    -fx-font-size: 13px;
+}
+
+.form-field:focused,
+.form-field .text-field:focused {
+    -fx-border-color: #8b5cf6;
+}
+
+/* Spinner specific styling */
+.form-field .increment-arrow-button,
+.form-field .decrement-arrow-button {
+    -fx-background-color: #2a2f55;
+    -fx-border-color: transparent;
+}
+
+.form-field .increment-arrow-button:hover,
+.form-field .decrement-arrow-button:hover {
+    -fx-background-color: #3a3f65;
+}
+
+.form-field .increment-arrow-button .increment-arrow,
+.form-field .decrement-arrow-button .decrement-arrow {
+    -fx-background-color: #94a3b8;
+}
+
+/* === ComboBox === */
+.form-combo {
+    -fx-background-color: #1a1f40;
+    -fx-border-color: #2a2f55;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-padding: 4 8;
+}
+
+.form-combo .list-cell {
+    -fx-text-fill: #e2e8f0;
+    -fx-font-size: 13px;
+    -fx-background-color: transparent;
+}
+
+.form-combo .arrow-button {
+    -fx-background-color: transparent;
+}
+
+.form-combo .arrow {
+    -fx-background-color: #94a3b8;
+}
+
+.form-combo .combo-box-popup .list-view {
+    -fx-background-color: #1a1f40;
+    -fx-border-color: #2a2f55;
+    -fx-background-radius: 6;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 10, 0, 0, 4);
+}
+
+.form-combo .combo-box-popup .list-view .list-cell {
+    -fx-background-color: #1a1f40;
+    -fx-text-fill: #e2e8f0;
+    -fx-padding: 8 12;
+}
+
+.form-combo .combo-box-popup .list-view .list-cell:hover {
+    -fx-background-color: #2a2f55;
+}
+
+.form-combo .combo-box-popup .list-view .list-cell:filled:selected {
+    -fx-background-color: #6c3fb5;
+    -fx-text-fill: white;
+}
+
+/* === Center Display === */
+.countdown-digits {
+    -fx-text-fill: #e2e8f0;
+    -fx-font-size: 64px;
+    -fx-font-family: "Menlo", "Courier New", monospace;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, #8b5cf680, 20, 0.3, 0, 0);
+}
+
+.unit-labels {
+    -fx-text-fill: #555a80;
+    -fx-font-size: 14px;
+    -fx-font-family: "Menlo", "Courier New", monospace;
+    -fx-padding: -8 0 0 0;
+}
+
+.center-theme-name {
+    -fx-text-fill: #e2e8f0;
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+}
+
+.center-description {
+    -fx-text-fill: #94a3b8;
+    -fx-font-size: 15px;
+    -fx-padding: -8 0 10 0;
+}
+
+.times-up-label {
+    -fx-text-fill: #22c55e;
+    -fx-font-size: 36px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, #22c55e80, 15, 0.3, 0, 0);
+}
+
+.empty-prompt {
+    -fx-text-fill: #555a80;
+    -fx-font-size: 16px;
+}
+
+/* === Control Buttons === */
+.control-btn {
+    -fx-background-color: #1e2348;
+    -fx-text-fill: #e2e8f0;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 24;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+.control-btn:hover {
+    -fx-background-color: #2a2f55;
+}
+
+/* === Tooltip === */
+.tooltip {
+    -fx-background-color: #1a1f40;
+    -fx-text-fill: #e2e8f0;
+    -fx-border-color: #2a2f55;
+    -fx-font-size: 12px;
+}
