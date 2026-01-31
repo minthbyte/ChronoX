@@ -95,25 +95,40 @@
     -fx-font-size: 12px;
 }
 
-/* === Arrow Buttons === */
-.arrow-btn {
-    -fx-background-color: transparent;
-    -fx-text-fill: #555a80;
-    -fx-font-size: 10px;
-    -fx-padding: 2 6;
+/* === Card Done Button === */
+.card-done-btn {
+    -fx-background-color: linear-gradient(to bottom, #16a34a, #22c55e);
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-padding: 4 10;
+    -fx-background-radius: 6;
     -fx-cursor: hand;
-    -fx-background-radius: 4;
-    -fx-min-width: 24px;
-    -fx-min-height: 20px;
 }
 
-.arrow-btn:hover {
-    -fx-background-color: #1e2348;
+.card-done-btn:hover {
+    -fx-background-color: linear-gradient(to bottom, #22c55e, #4ade80);
+}
+
+/* === Drag Handle === */
+.drag-handle {
+    -fx-text-fill: #555a80;
+    -fx-font-size: 16px;
+    -fx-cursor: move;
+    -fx-padding: 0 4 0 0;
+}
+
+.timer-card:hover .drag-handle {
     -fx-text-fill: #8b5cf6;
 }
 
-.arrow-btn:disabled {
-    -fx-opacity: 0.3;
+.timer-card-dragging {
+    -fx-opacity: 0.5;
+}
+
+.timer-card-drop-target {
+    -fx-border-color: #8b5cf6;
+    -fx-border-width: 2 0 0 0;
 }
 
 /* === Add Timer Button === */
@@ -171,6 +186,12 @@
     -fx-font-weight: bold;
 }
 
+.form-label {
+    -fx-text-fill: #94a3b8;
+    -fx-font-size: 12px;
+    -fx-padding: 4 0 0 0;
+}
+
 .form-field,
 .form-field .text-field {
     -fx-background-color: #1a1f40;
@@ -189,6 +210,14 @@
 }
 
 /* Spinner specific styling */
+.form-field .text-input {
+    -fx-background-color: #1a1f40;
+    -fx-text-fill: #e2e8f0;
+    -fx-prompt-text-fill: #555a80;
+    -fx-highlight-fill: #6c3fb5;
+    -fx-highlight-text-fill: white;
+}
+
 .form-field .increment-arrow-button,
 .form-field .decrement-arrow-button {
     -fx-background-color: #2a2f55;
@@ -253,7 +282,7 @@
 /* === Center Display === */
 .countdown-digits {
     -fx-text-fill: #e2e8f0;
-    -fx-font-size: 64px;
+    -fx-font-size: 42px;
     -fx-font-family: "Menlo", "Courier New", monospace;
     -fx-font-weight: bold;
     -fx-effect: dropshadow(gaussian, #8b5cf680, 20, 0.3, 0, 0);
@@ -286,8 +315,19 @@
 }
 
 .empty-prompt {
-    -fx-text-fill: #555a80;
-    -fx-font-size: 16px;
+    -fx-max-width: 400;
+}
+
+.guide-title {
+    -fx-text-fill: #e2e8f0;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+}
+
+.guide-text {
+    -fx-text-fill: #94a3b8;
+    -fx-font-size: 14px;
+    -fx-line-spacing: 6;
 }
 
 /* === Control Buttons === */
@@ -303,6 +343,23 @@
 
 .control-btn:hover {
     -fx-background-color: #2a2f55;
+}
+
+.delete-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #555a80;
+    -fx-font-size: 13px;
+    -fx-padding: 8 20;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-border-color: #2a2f55;
+    -fx-border-radius: 8;
+}
+
+.delete-btn:hover {
+    -fx-background-color: #3b1a1a;
+    -fx-text-fill: #ef4444;
+    -fx-border-color: #ef4444;
 }
 
 /* === Tooltip === */

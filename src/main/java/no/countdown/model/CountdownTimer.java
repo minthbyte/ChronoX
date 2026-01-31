@@ -23,6 +23,8 @@ public class CountdownTimer {
     private final LongProperty remainingSeconds = new SimpleLongProperty(0);
 
     private Duration pausedDuration;
+    private long originalAmount;
+    private TimeUnit originalUnit;
 
     public CountdownTimer(String themeName, String description) {
         this.themeName.set(themeName);
@@ -30,6 +32,8 @@ public class CountdownTimer {
     }
 
     public void startCountdown(long amount, TimeUnit unit) {
+        this.originalAmount = amount;
+        this.originalUnit = unit;
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime target = switch (unit) {
             case MINUTES -> now.plusMinutes(amount);
@@ -87,9 +91,17 @@ public class CountdownTimer {
         pausedDuration = null;
     }
 
+    public void restart() {
+        if (originalUnit == null) return;
+        startCountdown(originalAmount, originalUnit);
+    }
+
     public boolean isPaused() {
         return !running.get() && !finished.get() && pausedDuration != null;
     }
+
+    public long getOriginalAmount() { return originalAmount; }
+    public TimeUnit getOriginalUnit() { return originalUnit; }
 
     // Property accessors
     public StringProperty themeNameProperty() { return themeName; }

@@ -12,7 +12,7 @@ public class CountdownApp extends Application {
         TimerController controller = new TimerController();
         Scene scene = new Scene(controller, 900, 650);
         scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
-        primaryStage.setTitle("Countdown Timer");
+        primaryStage.setTitle("ChronoX");
         primaryStage.setScene(scene);
         primaryStage.show();
     }

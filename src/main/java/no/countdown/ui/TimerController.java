@@ -8,6 +8,9 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.DataFormat;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
 import javafx.util.Duration;
 import no.countdown.model.CountdownTimer;
@@ -18,9 +21,12 @@ import java.util.Map;
 
 public class TimerController extends BorderPane {
 
+    private static final DataFormat TIMER_INDEX = new DataFormat("application/x-timer-index");
+
     private final ObservableList<CountdownTimer> timers = FXCollections.observableArrayList();
     private final Map<CountdownTimer, Timeline> timelines = new HashMap<>();
     private CountdownTimer selectedTimer;
+    private int dragSourceIndex = -1;
 
     private final VBox timerListBox = new VBox(8);
     private final VBox centerDisplay = new VBox(16);
@@ -34,7 +40,11 @@ public class TimerController extends BorderPane {
     private final Label timesUpLabel = new Label("Time's Up!");
     private final Button pauseResumeBtn = new Button("Pause");
     private final Button resetBtn = new Button("Reset");
+    private final Button deleteBtn = new Button("Delete");
+    private final Button restartDoneBtn = new Button("Done");
     private final HBox controlButtons = new HBox(12, pauseResumeBtn, resetBtn);
+    private final HBox finishedButtons = new HBox(12, restartDoneBtn);
+    private VBox guideBox;
 
     private boolean formVisible = false;
 
@@ -52,7 +62,7 @@ public class TimerController extends BorderPane {
     }
 
     private HBox createTopBar() {
-        Label title = new Label("Countdown Timer");
+        Label title = new Label("ChronoX");
         title.getStyleClass().add("app-title");
         HBox topBar = new HBox(title);
         topBar.getStyleClass().add("top-bar");
@@ -106,15 +116,38 @@ public class TimerController extends BorderPane {
         controlButtons.setVisible(false);
         controlButtons.setManaged(false);
 
-        Label emptyPrompt = new Label("Create a timer to get started");
-        emptyPrompt.getStyleClass().add("empty-prompt");
+        finishedButtons.setAlignment(Pos.CENTER);
+        finishedButtons.setVisible(false);
+        finishedButtons.setManaged(false);
+
+        Label guideTitle = new Label("Welcome to ChronoX");
+        guideTitle.getStyleClass().add("guide-title");
+
+        Label guideText = new Label(
+            "1.  Click \"+ New Timer\" to create a timer\n" +
+            "2.  Enter a name, amount and time unit\n" +
+            "3.  Click \"Done\" \u2014 countdown starts immediately\n" +
+            "4.  Click a timer to view the full countdown\n" +
+            "5.  Use Pause, Reset or Delete to control it\n" +
+            "6.  Drag the \u2630 handle to reorder timers\n" +
+            "7.  When finished, press \"Done\" to restart"
+        );
+        guideText.getStyleClass().add("guide-text");
+
+        guideBox = new VBox(12, guideTitle, guideText);
+        guideBox.setAlignment(Pos.CENTER);
+
+        HBox deleteRow = new HBox(deleteBtn);
+        deleteRow.setAlignment(Pos.CENTER);
+        deleteRow.setVisible(false);
+        deleteRow.setManaged(false);
 
         centerDisplay.setAlignment(Pos.CENTER);
         centerDisplay.setPadding(new Insets(40));
         centerDisplay.getChildren().addAll(
                 centerThemeName, centerDescription,
                 countdownLabel, unitLabelsRow,
-                timesUpLabel, controlButtons, emptyPrompt
+                timesUpLabel, controlButtons, finishedButtons, deleteRow, guideBox
         );
 
         return centerDisplay;
@@ -137,9 +170,32 @@ public class TimerController extends BorderPane {
 
         resetBtn.setOnAction(e -> {
             if (selectedTimer == null) return;
-            Timeline tl = timelines.get(selectedTimer);
+            Timeline tl = timelines.remove(selectedTimer);
             if (tl != null) tl.stop();
-            selectedTimer.reset();
+            selectedTimer.restart();
+            startTimeline(selectedTimer);
+            updateCenterDisplay();
+            rebuildTimerList();
+        });
+
+        restartDoneBtn.getStyleClass().addAll("add-timer-btn", "done-btn");
+        restartDoneBtn.setOnAction(e -> {
+            if (selectedTimer == null || selectedTimer.isRunning()) return;
+            Timeline tl = timelines.remove(selectedTimer);
+            if (tl != null) tl.stop();
+            selectedTimer.restart();
+            startTimeline(selectedTimer);
+            updateCenterDisplay();
+            rebuildTimerList();
+        });
+
+        deleteBtn.getStyleClass().add("delete-btn");
+        deleteBtn.setOnAction(e -> {
+            if (selectedTimer == null) return;
+            Timeline tl = timelines.remove(selectedTimer);
+            if (tl != null) tl.stop();
+            timers.remove(selectedTimer);
+            selectedTimer = null;
             updateCenterDisplay();
             rebuildTimerList();
         });
@@ -169,20 +225,22 @@ public class TimerController extends BorderPane {
         descField.setPromptText("Description (optional)");
         descField.getStyleClass().add("form-field");
 
+        Label amountLabel = new Label("Amount");
+        amountLabel.getStyleClass().add("form-label");
+
         Spinner<Integer> amountSpinner = new Spinner<>(1, 9999, 1);
         amountSpinner.setEditable(true);
         amountSpinner.getStyleClass().add("form-field");
-        amountSpinner.setPrefWidth(Double.MAX_VALUE);
+        amountSpinner.setMaxWidth(Double.MAX_VALUE);
+
+        Label unitLabel = new Label("Unit");
+        unitLabel.getStyleClass().add("form-label");
 
         ComboBox<TimeUnit> unitCombo = new ComboBox<>();
         unitCombo.getItems().addAll(TimeUnit.values());
         unitCombo.setValue(TimeUnit.MINUTES);
         unitCombo.getStyleClass().add("form-combo");
         unitCombo.setMaxWidth(Double.MAX_VALUE);
-
-        HBox amountRow = new HBox(8, amountSpinner, unitCombo);
-        HBox.setHgrow(amountSpinner, Priority.ALWAYS);
-        HBox.setHgrow(unitCombo, Priority.ALWAYS);
 
         Button doneBtn = new Button("Done");
         doneBtn.getStyleClass().addAll("add-timer-btn", "done-btn");
@@ -219,7 +277,7 @@ public class TimerController extends BorderPane {
         HBox.setHgrow(doneBtn, Priority.ALWAYS);
         HBox.setHgrow(cancelBtn, Priority.ALWAYS);
 
-        VBox form = new VBox(8, formTitle, nameField, descField, amountRow, btnRow);
+        VBox form = new VBox(8, formTitle, nameField, descField, amountLabel, amountSpinner, unitLabel, unitCombo, btnRow);
         form.setPadding(new Insets(12));
         form.getStyleClass().add("new-timer-form");
         return form;
@@ -249,11 +307,6 @@ public class TimerController extends BorderPane {
     }
 
     private void updateCenterDisplay() {
-        // Find and hide the empty prompt
-        centerDisplay.getChildren().stream()
-                .filter(n -> n.getStyleClass().contains("empty-prompt"))
-                .forEach(n -> { n.setVisible(selectedTimer == null); n.setManaged(selectedTimer == null); });
-
         if (selectedTimer == null) {
             countdownLabel.setVisible(false);
             countdownLabel.setManaged(false);
@@ -267,6 +320,10 @@ public class TimerController extends BorderPane {
             timesUpLabel.setManaged(false);
             controlButtons.setVisible(false);
             controlButtons.setManaged(false);
+            finishedButtons.setVisible(false);
+            finishedButtons.setManaged(false);
+            deleteBtn.getParent().setVisible(false);
+            ((HBox) deleteBtn.getParent()).setManaged(false);
             return;
         }
 
@@ -296,18 +353,21 @@ public class TimerController extends BorderPane {
         timesUpLabel.setManaged(isFinished);
 
         boolean showControls = !isFinished && (selectedTimer.isRunning() || selectedTimer.isPaused());
-        controlButtons.setVisible(showControls || isFinished);
-        controlButtons.setManaged(showControls || isFinished);
+        controlButtons.setVisible(showControls);
+        controlButtons.setManaged(showControls);
+
+        boolean isStopped = !selectedTimer.isRunning() && !selectedTimer.isPaused();
+        finishedButtons.setVisible(isStopped);
+        finishedButtons.setManaged(isStopped);
 
         if (selectedTimer.isRunning()) {
             pauseResumeBtn.setText("Pause");
-            pauseResumeBtn.setVisible(true);
         } else if (selectedTimer.isPaused()) {
             pauseResumeBtn.setText("Resume");
-            pauseResumeBtn.setVisible(true);
-        } else {
-            pauseResumeBtn.setVisible(!isFinished);
         }
+
+        deleteBtn.getParent().setVisible(true);
+        ((HBox) deleteBtn.getParent()).setManaged(true);
     }
 
     private void rebuildTimerList() {
@@ -319,7 +379,6 @@ public class TimerController extends BorderPane {
     }
 
     private HBox createTimerCard(CountdownTimer timer, int index) {
-        VBox info = new VBox(4);
         Label nameLabel = new Label(timer.getThemeName());
         nameLabel.getStyleClass().add("card-name");
 
@@ -347,34 +406,27 @@ public class TimerController extends BorderPane {
         Label timeLabel = new Label(timeText);
         timeLabel.getStyleClass().add("card-time");
 
-        info.getChildren().addAll(nameLabel, timeLabel);
+        Label dragHandle = new Label("\u2630");
+        dragHandle.getStyleClass().add("drag-handle");
+
+        Button cardDoneBtn = new Button("Done");
+        cardDoneBtn.getStyleClass().add("card-done-btn");
+        boolean isStopped = !timer.isRunning() && !timer.isPaused() && timer.getOriginalUnit() != null;
+        cardDoneBtn.setVisible(isStopped);
+        cardDoneBtn.setManaged(isStopped);
+        cardDoneBtn.setOnAction(e -> {
+            Timeline tl = timelines.remove(timer);
+            if (tl != null) tl.stop();
+            timer.restart();
+            startTimeline(timer);
+            if (timer == selectedTimer) updateCenterDisplay();
+            rebuildTimerList();
+        });
+
+        VBox info = new VBox(4, nameLabel, timeLabel);
         HBox.setHgrow(info, Priority.ALWAYS);
 
-        // Reorder buttons
-        Button upBtn = new Button("\u25B2");
-        upBtn.getStyleClass().add("arrow-btn");
-        upBtn.setDisable(index == 0);
-        upBtn.setOnAction(e -> {
-            if (index > 0) {
-                CountdownTimer t = timers.remove(index);
-                timers.add(index - 1, t);
-            }
-        });
-
-        Button downBtn = new Button("\u25BC");
-        downBtn.getStyleClass().add("arrow-btn");
-        downBtn.setDisable(index == timers.size() - 1);
-        downBtn.setOnAction(e -> {
-            if (index < timers.size() - 1) {
-                CountdownTimer t = timers.remove(index);
-                timers.add(index + 1, t);
-            }
-        });
-
-        VBox arrows = new VBox(2, upBtn, downBtn);
-        arrows.setAlignment(Pos.CENTER);
-
-        HBox card = new HBox(10, info, arrows);
+        HBox card = new HBox(10, dragHandle, info, cardDoneBtn);
         card.getStyleClass().add("timer-card");
         card.setPadding(new Insets(10, 12, 10, 12));
         card.setAlignment(Pos.CENTER_LEFT);
@@ -384,6 +436,51 @@ public class TimerController extends BorderPane {
         }
 
         card.setOnMouseClicked(e -> selectTimer(timer));
+
+        // Drag-and-drop reordering
+        card.setOnDragDetected(e -> {
+            dragSourceIndex = index;
+            var db = card.startDragAndDrop(TransferMode.MOVE);
+            ClipboardContent cc = new ClipboardContent();
+            cc.put(TIMER_INDEX, index);
+            db.setContent(cc);
+            card.getStyleClass().add("timer-card-dragging");
+            e.consume();
+        });
+
+        card.setOnDragOver(e -> {
+            if (e.getGestureSource() != card && e.getDragboard().hasContent(TIMER_INDEX)) {
+                e.acceptTransferModes(TransferMode.MOVE);
+                card.getStyleClass().add("timer-card-drop-target");
+            }
+            e.consume();
+        });
+
+        card.setOnDragExited(e -> {
+            card.getStyleClass().remove("timer-card-drop-target");
+            e.consume();
+        });
+
+        card.setOnDragDropped(e -> {
+            var db = e.getDragboard();
+            if (db.hasContent(TIMER_INDEX)) {
+                int from = (int) db.getContent(TIMER_INDEX);
+                int to = index;
+                if (from != to) {
+                    CountdownTimer moved = timers.remove(from);
+                    timers.add(to, moved);
+                }
+                e.setDropCompleted(true);
+            } else {
+                e.setDropCompleted(false);
+            }
+            e.consume();
+        });
+
+        card.setOnDragDone(e -> {
+            dragSourceIndex = -1;
+            e.consume();
+        });
 
         return card;
     }
