@@ -54,3 +54,6 @@ src/main/resources/
 - Java 17
 - JavaFX 21
 - Maven with javafx-maven-plugin
+
+---                                                                           
+  Built with the assistance of https://claude.ai by Anthropic.     
