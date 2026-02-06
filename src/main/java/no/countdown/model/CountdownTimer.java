@@ -17,6 +17,7 @@ public class CountdownTimer {
 
     private final StringProperty themeName = new SimpleStringProperty("");
     private final StringProperty description = new SimpleStringProperty("");
+    private final StringProperty className = new SimpleStringProperty("");
     private final ObjectProperty<LocalDateTime> targetTime = new SimpleObjectProperty<>();
     private final BooleanProperty running = new SimpleBooleanProperty(false);
     private final BooleanProperty finished = new SimpleBooleanProperty(false);
@@ -25,10 +26,17 @@ public class CountdownTimer {
     private Duration pausedDuration;
     private long originalAmount;
     private TimeUnit originalUnit;
+    private long totalSeconds;
 
     public CountdownTimer(String themeName, String description) {
         this.themeName.set(themeName);
         this.description.set(description);
+    }
+
+    public CountdownTimer(String themeName, String description, String className) {
+        this.themeName.set(themeName);
+        this.description.set(description);
+        this.className.set(className != null ? className : "");
     }
 
     public void startCountdown(long amount, TimeUnit unit) {
@@ -43,6 +51,7 @@ public class CountdownTimer {
             case MONTHS -> now.plusMonths(amount);
         };
         targetTime.set(target);
+        totalSeconds = Duration.between(now, target).toSeconds();
         finished.set(false);
         running.set(true);
         pausedDuration = null;
@@ -100,15 +109,61 @@ public class CountdownTimer {
         return !running.get() && !finished.get() && pausedDuration != null;
     }
 
+    /** Restore a running timer from saved targetTime */
+    public void restoreRunning(long amount, TimeUnit unit, long savedTotalSeconds, LocalDateTime savedTarget) {
+        this.originalAmount = amount;
+        this.originalUnit = unit;
+        this.totalSeconds = savedTotalSeconds;
+        this.targetTime.set(savedTarget);
+        this.pausedDuration = null;
+        this.finished.set(false);
+        this.running.set(true);
+        updateRemaining(); // will mark finished if target is in the past
+    }
+
+    /** Restore a paused timer from saved remaining seconds */
+    public void restorePaused(long amount, TimeUnit unit, long savedTotalSeconds, long savedRemainingSeconds) {
+        this.originalAmount = amount;
+        this.originalUnit = unit;
+        this.totalSeconds = savedTotalSeconds;
+        this.pausedDuration = Duration.ofSeconds(savedRemainingSeconds);
+        this.remainingSeconds.set(savedRemainingSeconds);
+        this.running.set(false);
+        this.finished.set(false);
+    }
+
+    /** Restore a finished timer */
+    public void restoreFinished(long amount, TimeUnit unit, long savedTotalSeconds) {
+        this.originalAmount = amount;
+        this.originalUnit = unit;
+        this.totalSeconds = savedTotalSeconds;
+        this.remainingSeconds.set(0);
+        this.running.set(false);
+        this.finished.set(true);
+    }
+
     public long getOriginalAmount() { return originalAmount; }
     public TimeUnit getOriginalUnit() { return originalUnit; }
+    public long getTotalSeconds() { return totalSeconds; }
+
+    public double getProgress() {
+        if (totalSeconds <= 0) return 0;
+        long remaining = getRemainingSeconds();
+        return 1.0 - ((double) remaining / totalSeconds);
+    }
 
     // Property accessors
     public StringProperty themeNameProperty() { return themeName; }
     public String getThemeName() { return themeName.get(); }
+    public void setThemeName(String name) { this.themeName.set(name); }
 
     public StringProperty descriptionProperty() { return description; }
     public String getDescription() { return description.get(); }
+    public void setDescription(String desc) { this.description.set(desc); }
+
+    public StringProperty classNameProperty() { return className; }
+    public String getClassName() { return className.get(); }
+    public void setClassName(String cn) { this.className.set(cn != null ? cn : ""); }
 
     public ObjectProperty<LocalDateTime> targetTimeProperty() { return targetTime; }
 

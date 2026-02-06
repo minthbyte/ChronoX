@@ -1,5 +1,6 @@
 module no.countdown {
     requires javafx.controls;
+    requires java.desktop;
 
     exports no.countdown;
     exports no.countdown.model;
