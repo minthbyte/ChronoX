@@ -62,3 +62,6 @@ Timer state is persisted to `~/.chronox/timers.txt`. Running timers resume from 
 - Java 17
 - JavaFX 21
 - Maven with javafx-maven-plugin
+
+---                                                                           
+  Built with the assistance of https://claude.ai by Anthropic.     
